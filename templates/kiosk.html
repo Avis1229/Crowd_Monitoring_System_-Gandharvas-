@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CivicGuard - Street & Railway PIDS Public Display</title>
+    <!-- Industrial High-Contrast Typography for Street & Railway PIDS Displays -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Chivo:wght@700;900&family=JetBrains+Mono:wght@600;700;800&family=Outfit:wght@500;700;800;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/kiosk.css">
+</head>
+<body class="kiosk-body">
+    <!-- Main Dumb Display Container (Optimized for 16:9 / Smartphone Landscape Display via USB) -->
+    <div class="kiosk-container">
+        
+        <!-- Header: Station / Location & Clock -->
+        <header class="pids-header">
+            <div class="pids-location">
+                <div class="location-badge">PUBLIC CHECKPOINT</div>
+                <h1 class="location-name" id="kioskLocation">MALL ROAD / CENTRAL PLAZA</h1>
+                <span class="pids-zone">ZONE 01 • PLATFORM CONCOURSE</span>
+            </div>
+
+            <div class="pids-header-right">
+                <div class="privacy-certified-badge">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                    </svg>
+                    <span>ANONYMOUS SENSING • NO BIOMETRICS</span>
+                </div>
+                <div class="pids-clock-box">
+                    <span class="pids-time" id="pidsClock">08:56:00 PM</span>
+                    <span class="pids-date" id="pidsDate">LIVE REAL-TIME</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Body: Traffic-Light Congestion Status & Key Indicators -->
+        <main class="pids-grid">
+            
+            <!-- Left Card: Huge Congestion Status Bar (Railway / Street PIDS) -->
+            <section class="pids-card status-card" id="statusCard">
+                <div class="card-inner">
+                    <div class="status-indicator-strip">
+                        <div class="light-dot green active" id="dotGreen"></div>
+                        <div class="light-dot amber" id="dotAmber"></div>
+                        <div class="light-dot red" id="dotRed"></div>
+                    </div>
+                    
+                    <div class="status-text-block">
+                        <span class="status-sub">CURRENT CROWD DENSITY</span>
+                        <h2 class="status-main text-green" id="statusText">NORMAL FLOW</h2>
+                        <p class="status-instruction" id="statusInstruction">Safe for entry. Enjoy your visit with minimal wait time.</p>
+                    </div>
+
+                    <!-- Density Bar -->
+                    <div class="gauge-wrapper">
+                        <div class="gauge-bar">
+                            <div class="gauge-fill" id="densityFill" style="width: 45%;"></div>
+                        </div>
+                        <div class="gauge-labels">
+                            <span>0% (Empty)</span>
+                            <span id="densityPercent">45% Capacity</span>
+                            <span>100% (Full)</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Right Column: Numbers, Entry/Exit, Daily Peak Alert -->
+            <div class="pids-metrics-grid">
+                
+                <!-- Box 1: Live Occupancy Ratio -->
+                <div class="metric-card metric-occupancy">
+                    <span class="metric-label">CURRENT OCCUPANCY</span>
+                    <div class="metric-value-huge" id="kioskOccupancy">1679<span class="metric-slash">/</span><span class="metric-total" id="kioskCapacity">2000</span></div>
+                    <span class="metric-sub" id="availableSpots">321 Entry Slots Remaining</span>
+                </div>
+
+                <!-- Box 2: Entry & Exit Flow Rate -->
+                <div class="metric-card metric-flow">
+                    <div class="flow-split">
+                        <div class="flow-item">
+                            <span class="metric-label">TOTAL IN</span>
+                            <span class="flow-val text-green" id="kioskEntries">456</span>
+                        </div>
+                        <div class="flow-divider"></div>
+                        <div class="flow-item">
+                            <span class="metric-label">TOTAL OUT</span>
+                            <span class="flow-val text-yellow" id="kioskExits">9879</span>
+                        </div>
+                    </div>
+                    <span class="metric-sub">Continuous Footfall Count</span>
+                </div>
+
+                <!-- Box 3: Daily Peak Update -->
+                <div class="metric-card metric-peak">
+                    <span class="metric-label">DAILY SURGE FORECAST</span>
+                    <div class="peak-badge-pill" id="kioskPeakAlert">
+                        ⚠️ Crowd rises near 9:30 pm
+                    </div>
+                    <span class="metric-sub">Plan exit or diversion accordingly</span>
+                </div>
+
+                <!-- Box 4: Weekly Benchmark Reference -->
+                <div class="metric-card metric-benchmark">
+                    <span class="metric-label">PAST WEEKS AVERAGE</span>
+                    <div class="metric-value-med" id="kioskWeekly">700 - 1200</div>
+                    <span class="metric-sub">Visitors per day average</span>
+                </div>
+            </div>
+        </main>
+
+        <!-- Privacy & Safety Guarantee Strip -->
+        <div class="pids-ethics-strip">
+            <div class="ethics-item">
+                <span class="ethics-icon">🔒</span>
+                <span><strong>Privacy Ethics:</strong> Edge AI Processing Only • No Raw Surveillance Video Stored</span>
+            </div>
+            <div class="ethics-item">
+                <span class="ethics-icon">⚡</span>
+                <span><strong>Hardware:</strong> Raspberry Pi 4 Edge Node • Offline Autonomous Operation</span>
+            </div>
+            <div class="ethics-item">
+                <span class="ethics-icon">🌐</span>
+                <span><strong>Remote Check:</strong> Visit <em>/public</em> on mobile for remote crowd status</span>
+            </div>
+        </div>
+
+        <!-- Bottom Running Marquee / Ticker (Updated live by Admin) -->
+        <footer class="pids-footer">
+            <div class="pids-alert-tag">
+                <span class="pulse-dot"></span>
+                <span>CIVIC NOTICE</span>
+            </div>
+            <div class="pids-ticker-window">
+                <div class="pids-ticker-track" id="kioskTicker">
+                    Currently Mall Road is under construction (updated by admin panel )
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <script src="/static/js/kiosk.js"></script>
+</body>
+</html>

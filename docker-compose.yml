@@ -1,0 +1,19 @@
+version: '3.8'
+
+services:
+  crowd-monitor:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: crowd-monitor:latest
+    container_name: ai_tourist_crowd_monitor
+    restart: unless-stopped
+    ports:
+      - "5000:5000"
+    devices:
+      - "/dev/video0:/dev/video0"
+    volumes:
+      - ./alerts:/app/alerts
+      - ./sample_crowd.mp4:/app/sample_crowd.mp4
+    environment:
+      - PORT=5000

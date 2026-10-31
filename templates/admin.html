@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CivicGuard - Security Operations Admin Console</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Chivo:wght@400;600;700;900&family=JetBrains+Mono:wght@500;700&family=Outfit:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/admin.css">
+</head>
+
+<body>
+    <div class="admin-wrapper">
+        <!-- Top Navigation Bar -->
+        <header class="admin-header">
+            <div class="brand-group">
+                <div class="brand-logo">🛡️</div>
+                <div>
+                    <h1 class="brand-title">CivicGuard Command Center</h1>
+                    <p class="brand-subtitle">Municipal Security Operations & Edge Hardware Administrator</p>
+                </div>
+            </div>
+
+            <div class="header-actions">
+                <div class="system-status-badge">
+                    <span class="status-pulse"></span>
+                    <span>RPi 4 EDGE NODE ONLINE</span>
+                </div>
+                <div class="nav-btn-group">
+                    <a href="/kiosk" target="_blank" class="btn-view-display"
+                        title="View Street/Railway PIDS Display (on Phone via USB)">
+                        🚉 Street/Railway Kiosk
+                    </a>
+                    <a href="/public" target="_blank" class="btn-view-display" title="View Remote Citizen Portal">
+                        🌐 Citizen Web Portal
+                    </a>
+                    <a href="/" target="_blank" class="btn-view-display highlight" title="View CCTV Municipal HUD">
+                        📺 Municipal CCTV HUD
+                    </a>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Admin Grid -->
+        <main class="admin-grid">
+            <!-- Left Column: Primary Broadcast & Controls -->
+            <div class="grid-col main-controls">
+
+                <!-- Card 1: Live Ticker Announcement Manager -->
+                <section class="admin-card highlight-card">
+                    <div class="card-header">
+                        <h2>📢 Public Ticker Broadcast Controller</h2>
+                        <span class="badge-live">LIVE ON ALL SCREENS</span>
+                    </div>
+                    <p class="card-desc">Instantly updates the ticker marquee on the Street Dumb Display, Remote Citizen
+                        Portal, and CCTV HUD.</p>
+
+                    <div class="form-group">
+                        <label for="inputTicker">Ticker Announcement Message:</label>
+                        <textarea id="inputTicker" rows="2"
+                            placeholder="Enter broadcast message...">Currently Mall Road is under construction (updated by admin panel )</textarea>
+                    </div>
+
+                    <div class="quick-presets">
+                        <span class="presets-label">⚡ Fast Presets:</span>
+                        <button type="button" class="preset-tag"
+                            onclick="setTickerPreset('Currently Mall Road is under construction (updated by admin panel )')">Construction
+                            Notice</button>
+                        <button type="button" class="preset-tag"
+                            onclick="setTickerPreset('⚠️ Heavy footfall at Gate 2. Please divert to North Entrance.')">Crowd
+                            Diversion</button>
+                        <button type="button" class="preset-tag"
+                            onclick="setTickerPreset('🌧️ Rain forecast: Scenic viewpoint slippery. Please hold safety railings.')">Weather
+                            Warning</button>
+                        <button type="button" class="preset-tag"
+                            onclick="setTickerPreset('🛑 Venue at Maximum Capacity. Entry temporarily paused.')">Capacity
+                            Hold</button>
+                    </div>
+
+                    <div class="card-actions">
+                        <button id="btnUpdateTicker" class="btn-primary" onclick="updateTicker()">
+                            🚀 Broadcast to All Screens
+                        </button>
+                        <span id="tickerFeedback" class="action-feedback"></span>
+                    </div>
+                </section>
+
+                <!-- Card 2: Daily Update Alert & Crowd Prediction -->
+                <section class="admin-card">
+                    <div class="card-header">
+                        <h2>⏱️ Daily Update & Surge Prediction</h2>
+                    </div>
+                    <p class="card-desc">Controls the surge forecast badge across all public displays.</p>
+
+                    <div class="form-row">
+                        <div class="form-group flex-1">
+                            <label for="inputDailyAlert">HUD Alert Badge Text:</label>
+                            <input type="text" id="inputDailyAlert" value="Crowd rises near 9:30 pm">
+                        </div>
+                        <div class="form-group flex-1">
+                            <label for="inputAccuracy">Model Accuracy Display (%):</label>
+                            <input type="number" id="inputAccuracy" min="50" max="99" value="87">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="inputWeekly">In Past Weeks Footfall Baseline:</label>
+                        <input type="text" id="inputWeekly" value="700-1200">
+                    </div>
+
+                    <div class="card-actions">
+                        <button id="btnUpdateHUD" class="btn-secondary" onclick="updateHUDMeta()">
+                            💾 Save HUD Data
+                        </button>
+                        <span id="hudFeedback" class="action-feedback"></span>
+                    </div>
+                </section>
+
+                <!-- Card 3: Venue Capacity & Alert Thresholds -->
+                <section class="admin-card" id="cardThresholds">
+                    <div class="card-header">
+                        <h2>🚨 Venue Capacity & Alarm Thresholds</h2>
+                        <span id="thresholdLiveBadge" class="badge-fps"
+                            style="background: rgba(16, 185, 129, 0.2); color: #34d399;">🟢 NORMAL FLOW</span>
+                    </div>
+                    <p class="card-desc">When crowd occupancy reaches the Warning Threshold, system triggers real-time
+                        visual alerts.</p>
+                    <div id="thresholdAlertBanner" class="threshold-alert-banner" style="display: none;">
+                        ⚠️ WARNING: Crowd threshold reached! Immediate queue regulation advised.
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group flex-1">
+                            <label for="inputCapacity">Max Venue Capacity:</label>
+                            <input type="number" id="inputCapacity" value="2000" min="10">
+                        </div>
+                        <div class="form-group flex-1" id="groupWarning">
+                            <label for="inputWarning">Warning Threshold (Limit):</label>
+                            <input type="number" id="inputWarning" value="30" min="1">
+                        </div>
+                        <div class="form-group flex-1" id="groupCritical">
+                            <label for="inputCritical">Critical Threshold (Red):</label>
+                            <input type="number" id="inputCritical" value="45" min="2">
+                        </div>
+                    </div>
+                    <div class="card-actions">
+                        <button class="btn-secondary" onclick="updateThresholds()">
+                            💾 Update Capacity & Thresholds
+                        </button>
+                        <span id="thresholdFeedback" class="action-feedback"></span>
+                    </div>
+                </section>
+
+                <!-- Card 4: 36-Hour Ground Truth Benchmark Evidence -->
+                <section class="admin-card">
+                    <div class="card-header">
+                        <h2>📊 36-Hour Ground Truth Evidence & Accuracy Report</h2>
+                        <span class="badge-fps">EVALUATION MODULE</span>
+                    </div>
+                    <p class="card-desc">Validates model precision against ground truth headcounts for Round 1
+                        competition evaluation.</p>
+
+                    <div class="evidence-stats-grid">
+                        <div class="evidence-stat">
+                            <span class="stat-lbl">MAE Error:</span>
+                            <strong class="stat-val" id="metricMAE">1.42</strong>
+                        </div>
+                        <div class="evidence-stat">
+                            <span class="stat-lbl">RMSE:</span>
+                            <strong class="stat-val" id="metricRMSE">2.18</strong>
+                        </div>
+                        <div class="evidence-stat">
+                            <span class="stat-lbl">Accuracy:</span>
+                            <strong class="stat-val text-green" id="metricAcc">94.2%</strong>
+                        </div>
+                        <div class="evidence-stat">
+                            <span class="stat-lbl">Alert F1 Score:</span>
+                            <strong class="stat-val text-yellow" id="metricF1">96.8%</strong>
+                        </div>
+                    </div>
+
+                    <div class="card-actions" style="margin-top: 14px;">
+                        <a href="/api/evidence/download" class="btn-primary"
+                            style="text-decoration: none; display: inline-block;">
+                            📥 Download 36-Hour Evidence CSV
+                        </a>
+                    </div>
+                </section>
+            </div>
+
+            <!-- Right Column: Video Source, Live Mini-Feed & Hardware Telemetry -->
+            <div class="grid-col side-controls">
+
+                <!-- Card 5: Mini Camera Monitor & Custom ROI Zone Drawer -->
+                <section class="admin-card">
+                    <div class="card-header">
+                        <h2>📹 Operator Stream & Interactive Zone Drawer</h2>
+                        <span id="adminFps" class="badge-fps">30.0 FPS</span>
+                    </div>
+                    <p class="card-desc">Click a button below and <strong>drag with your mouse directly on the video</strong> to draw Entry & Exit detection boxes.</p>
+
+                    <!-- Interactive Zone Drawing Toolbar -->
+                    <div class="zone-controller-bar">
+                        <div class="zone-btn-row">
+                            <button type="button" id="btnModeEntry" class="btn-zone-mode btn-zone-entry" onclick="setZoneDrawMode('entry')">
+                                🟩 Draw Entry Box
+                            </button>
+                            <button type="button" id="btnModeExit" class="btn-zone-mode btn-zone-exit" onclick="setZoneDrawMode('exit')">
+                                🟥 Draw Exit Box
+                            </button>
+                            <button type="button" class="btn-zone-mode btn-zone-clear" onclick="clearZones()">
+                                🗑️ Clear Boxes
+                            </button>
+                        </div>
+                        <div class="zone-presets-row">
+                            <span class="presets-lbl">⚡ Fast Presets:</span>
+                            <button type="button" class="btn-preset-mini" onclick="applyPresetZones('split_vertical')">Left=In, Right=Out</button>
+                            <button type="button" class="btn-preset-mini" onclick="applyPresetZones('split_horizontal')">Top=In, Bottom=Out</button>
+                            <button type="button" class="btn-preset-mini" onclick="applyPresetZones('center_gate')">Center Gate</button>
+                        </div>
+                        <div id="drawInstructions" class="draw-instruction-pill">
+                            👆 Select "Draw Entry Box" or "Draw Exit Box" above, then drag across video.
+                        </div>
+                        <div id="zoneStatusText" class="zone-status-text">
+                            Active Zones: <span id="zoneSummaryLabel">None (Using standard tripwire)</span>
+                        </div>
+                    </div>
+
+                    <div class="admin-preview-box" id="previewContainer">
+                        <img id="adminPreviewImg" src="/video_feed" alt="Admin Preview Stream">
+                        <canvas id="zoneCanvas"></canvas>
+                    </div>
+
+                    <div class="live-counter-strip">
+                        <div class="mini-stat">
+                            <span class="mini-stat-label">HEADCOUNT</span>
+                            <span class="mini-stat-val" id="miniHeadcount">0</span>
+                        </div>
+                        <div class="mini-stat">
+                            <span class="mini-stat-label">TOTAL IN</span>
+                            <span class="mini-stat-val text-green" id="miniIn">0</span>
+                        </div>
+                        <div class="mini-stat">
+                            <span class="mini-stat-label">TOTAL OUT</span>
+                            <span class="mini-stat-val text-red" id="miniOut">0</span>
+                        </div>
+                        <div class="mini-stat">
+                            <span class="mini-stat-label">STATUS</span>
+                            <span class="mini-stat-val text-yellow" id="miniStatus">NORMAL</span>
+                        </div>
+                    </div>
+
+                    <div style="margin-top: 15px;">
+                        <button class="btn-danger w-full" onclick="resetCounts()">
+                            🔄 Reset Entries & Exits Counters
+                        </button>
+                    </div>
+                </section>
+
+                <!-- Card 6: Raspberry Pi 4 Hardware Health Telemetry -->
+                <section class="admin-card">
+                    <div class="card-header">
+                        <h2>⚡ Raspberry Pi 4 Edge Hardware Telemetry</h2>
+                    </div>
+                    <div class="hw-spec-list">
+                        <div class="hw-spec-row">
+                            <span class="hw-spec-k">Processing Node:</span>
+                            <span class="hw-spec-v" id="hwPlatform">Raspberry Pi 4 Model B</span>
+                        </div>
+                        <div class="hw-spec-row">
+                            <span class="hw-spec-k">Camera Interface:</span>
+                            <span class="hw-spec-v" id="hwCamera">RPi Camera Module (CSI Ribbon)</span>
+                        </div>
+                        <div class="hw-spec-row">
+                            <span class="hw-spec-k">Public Display:</span>
+                            <span class="hw-spec-v" id="hwDisplay">Smartphone Dumb Display via USB</span>
+                        </div>
+                        <div class="hw-spec-row">
+                            <span class="hw-spec-k">CPU Temperature:</span>
+                            <span class="hw-spec-v text-green" id="hwTemp">42.5 °C</span>
+                        </div>
+                        <div class="hw-spec-row">
+                            <span class="hw-spec-k">Memory Usage:</span>
+                            <span class="hw-spec-v" id="hwRam">1.2 GB / 4.0 GB</span>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Card 7: Video Input Source Selector -->
+                <section class="admin-card">
+                    <div class="card-header">
+                        <h2>📡 Camera & Video Input Source</h2>
+                    </div>
+                    <p class="card-desc">Switch between synthetic test footage, local webcam, or Raspberry Pi Camera.
+                    </p>
+
+                    <div class="form-group">
+                        <label for="selectSource">Select Video Feed:</label>
+                        <select id="selectSource" onchange="toggleCustomUrl(this.value)">
+                            <option value="sample_crowd.mp4">Simulated Scenic Test Video (Zero Config)</option>
+                            <option value="0">Live USB / Laptop Webcam / Pi Cam (/dev/video0)</option>
+                            <option value="custom">Raspberry Pi Stream / RTSP IP Camera URL</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group" id="groupCustomUrl" style="display: none;">
+                        <label for="inputCustomUrl">Pi / RTSP Stream URL:</label>
+                        <input type="text" id="inputCustomUrl" value="http://192.168.1.50:8080/video_feed"
+                            placeholder="http://<PI_IP>:8080/video_feed">
+                    </div>
+
+                    <div class="card-actions">
+                        <button class="btn-primary" onclick="changeVideoSource()">
+                            🔀 Switch Video Source
+                        </button>
+                        <span id="sourceFeedback" class="action-feedback"></span>
+                    </div>
+                </section>
+
+                <!-- Card 8: Privacy Anonymization Mode -->
+                <section class="admin-card">
+                    <div class="card-header">
+                        <h2>🛡️ Public vs Admin Privacy Ethics Shield</h2>
+                    </div>
+                    <div class="form-group">
+                        <label for="selectPrivacy">CCTV Face Anonymization Mode:</label>
+                        <select id="selectPrivacy" onchange="changePrivacyMode(this.value)">
+                            <option value="cctv_style" selected>Smart City CCTV (Pastel Bounding Boxes + Face Blur)
+                            </option>
+                            <option value="blur">Strict Face & Body Blur (GDPR Certified)</option>
+                            <option value="anonymize_box">Abstract Centroids Only (Zero Identification)</option>
+                            <option value="none">Raw Detection Bounding Boxes (Admin Only)</option>
+                        </select>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <script src="/static/js/admin.js"></script>
+</body>
+
+</html>

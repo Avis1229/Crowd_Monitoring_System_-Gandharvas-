@@ -1,0 +1,39 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+venv/
+env/
+ENV/
+.venv/
+
+# Distribution / packaging
+*.zip
+*.tar.gz
+runs/
+datasets/
+
+# Alert snapshots (generated during runtime)
+alerts/*.jpg
+alerts/*.png
+!alerts/.gitkeep
+
+# IDE and Editor
+.vscode/*
+!.vscode/settings.json
+.idea/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Local hardware access & credentials scripts
+ssh_pi.py
+restart.sh
+sync_to_pi.sh
+.env
+*.log

@@ -1,0 +1,15 @@
+# Core Production Edge & Web Stack
+flask>=3.0.0
+ultralytics>=8.1.0
+opencv-python>=4.8.0
+numpy>=1.24.0
+pandas>=2.0.0
+pillow>=10.0.0
+requests>=2.28.0
+
+# Optional Ground-Truth Validation & Evidence Visualization (crowd_monitor.py)
+streamlit>=1.30.0
+plotly>=5.18.0
+
+# Optional Remote Pi Automation & SSH Utilities (restart.sh, ssh_pi.py)
+pexpect>=4.9.0

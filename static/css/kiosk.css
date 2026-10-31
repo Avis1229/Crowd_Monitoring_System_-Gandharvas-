@@ -1,0 +1,474 @@
+/* static/css/kiosk.css
+ * High-Contrast Railway & Street PIDS (Passenger Information Display System)
+ * Optimized for Smartphone Dumb Display mounted horizontally via USB cable
+ */
+
+:root {
+    --bg-dark: #07090e;
+    --bg-card: #101522;
+    --bg-card-border: #1e263d;
+    --text-primary: #f0f4fc;
+    --text-muted: #8b9bb4;
+    --accent-yellow: #ffd60a;
+    --signal-green: #00f076;
+    --signal-amber: #ffaa00;
+    --signal-red: #ff334b;
+    --blue-glow: #0077ff;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html, body {
+    width: 100%;
+    height: 100%;
+    background-color: var(--bg-dark);
+    color: var(--text-primary);
+    font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+    overflow: hidden;
+    user-select: none;
+    -webkit-user-select: none;
+    cursor: none; /* Dumb display mode - hide mouse cursor */
+}
+
+.kiosk-container {
+    display: flex;
+    flex-direction: column;
+    width: 100vw;
+    height: 100vh;
+    padding: 18px 24px 14px 24px;
+    background: radial-gradient(circle at 50% 20%, #111a2f 0%, #07090e 100%);
+    gap: 12px;
+}
+
+/* -------------------------------------------------------------
+ * 1. PIDS Header
+ * ----------------------------------------------------------- */
+.pids-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #0d121f;
+    border: 2px solid var(--bg-card-border);
+    border-radius: 12px;
+    padding: 12px 24px;
+}
+
+.location-badge {
+    display: inline-block;
+    background: #1c263d;
+    color: var(--accent-yellow);
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 1.5px;
+    padding: 3px 10px;
+    border-radius: 6px;
+    margin-bottom: 4px;
+}
+
+.location-name {
+    font-family: 'Chivo', sans-serif;
+    font-size: 26px;
+    font-weight: 900;
+    letter-spacing: 0.5px;
+    color: #ffffff;
+    line-height: 1.1;
+}
+
+.pids-zone {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--text-muted);
+    letter-spacing: 1px;
+}
+
+.pids-header-right {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.privacy-certified-badge {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(0, 240, 118, 0.08);
+    border: 1px solid rgba(0, 240, 118, 0.3);
+    padding: 8px 14px;
+    border-radius: 8px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--signal-green);
+    letter-spacing: 0.5px;
+}
+
+.pids-clock-box {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+}
+
+.pids-time {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 28px;
+    font-weight: 800;
+    color: var(--accent-yellow);
+    line-height: 1;
+}
+
+.pids-date {
+    font-size: 11px;
+    color: var(--text-muted);
+    font-weight: 700;
+    letter-spacing: 1px;
+    margin-top: 4px;
+}
+
+/* -------------------------------------------------------------
+ * 2. Main PIDS Grid
+ * ----------------------------------------------------------- */
+.pids-grid {
+    flex: 1;
+    display: grid;
+    grid-template-columns: 1.3fr 1.7fr;
+    gap: 16px;
+    min-height: 0;
+}
+
+/* Status Card (Traffic Light System) */
+.status-card {
+    background: var(--bg-card);
+    border: 2px solid var(--bg-card-border);
+    border-radius: 14px;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.status-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 6px;
+    height: 100%;
+    background: var(--signal-green);
+    transition: background 0.4s ease;
+}
+
+.status-indicator-strip {
+    display: flex;
+    gap: 14px;
+    margin-bottom: 20px;
+}
+
+.light-dot {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    opacity: 0.25;
+    transition: all 0.3s ease;
+}
+
+.light-dot.green { background: var(--signal-green); }
+.light-dot.amber { background: var(--signal-amber); }
+.light-dot.red { background: var(--signal-red); }
+
+.light-dot.active {
+    opacity: 1;
+    box-shadow: 0 0 16px currentColor;
+    transform: scale(1.15);
+}
+
+.status-sub {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text-muted);
+    letter-spacing: 1.5px;
+}
+
+.status-main {
+    font-family: 'Chivo', sans-serif;
+    font-size: 42px;
+    font-weight: 900;
+    line-height: 1.1;
+    margin: 6px 0 10px 0;
+    letter-spacing: 0.5px;
+}
+
+.text-green { color: var(--signal-green); }
+.text-amber { color: var(--signal-amber); }
+.text-red { color: var(--signal-red); }
+.text-yellow { color: var(--accent-yellow); }
+
+.status-instruction {
+    font-size: 15px;
+    color: #c4d2e8;
+    line-height: 1.4;
+    margin-bottom: 24px;
+}
+
+.gauge-wrapper {
+    background: #090c14;
+    border-radius: 10px;
+    padding: 12px 14px;
+    border: 1px solid #1a2236;
+}
+
+.gauge-bar {
+    width: 100%;
+    height: 16px;
+    background: #141c2c;
+    border-radius: 8px;
+    overflow: hidden;
+    position: relative;
+}
+
+.gauge-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #00f076, #ffd60a);
+    border-radius: 8px;
+    transition: width 0.5s ease, background 0.4s ease;
+}
+
+.gauge-labels {
+    display: flex;
+    justify-content: space-between;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--text-muted);
+    font-weight: 700;
+    margin-top: 6px;
+}
+
+/* Metrics Grid (Right Column) */
+.pids-metrics-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    gap: 14px;
+}
+
+.metric-card {
+    background: var(--bg-card);
+    border: 2px solid var(--bg-card-border);
+    border-radius: 12px;
+    padding: 18px 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.metric-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--text-muted);
+    letter-spacing: 1px;
+}
+
+.metric-value-huge {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 42px;
+    font-weight: 800;
+    color: #ffffff;
+    line-height: 1.1;
+}
+
+.metric-slash {
+    color: var(--text-muted);
+    font-weight: 400;
+    margin: 0 4px;
+}
+
+.metric-total {
+    font-size: 26px;
+    color: var(--text-muted);
+}
+
+.metric-value-med {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 32px;
+    font-weight: 800;
+    color: var(--accent-yellow);
+}
+
+.metric-sub {
+    font-size: 13px;
+    color: #9cb0ce;
+    font-weight: 600;
+}
+
+.flow-split {
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    margin: 8px 0;
+}
+
+.flow-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.flow-val {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 32px;
+    font-weight: 800;
+}
+
+.flow-divider {
+    width: 2px;
+    height: 42px;
+    background: var(--bg-card-border);
+}
+
+.peak-badge-pill {
+    background: rgba(255, 51, 75, 0.15);
+    border: 1px solid rgba(255, 51, 75, 0.4);
+    color: #ff5569;
+    font-family: 'Outfit', sans-serif;
+    font-size: 16px;
+    font-weight: 800;
+    padding: 10px 14px;
+    border-radius: 8px;
+    margin: 8px 0;
+}
+
+/* -------------------------------------------------------------
+ * 3. Ethics & Hardware Strip
+ * ----------------------------------------------------------- */
+.pids-ethics-strip {
+    display: flex;
+    justify-content: space-between;
+    background: #090e18;
+    border: 1px solid #161e30;
+    border-radius: 8px;
+    padding: 7px 18px;
+    font-size: 12px;
+    color: #9ab0cf;
+}
+
+.ethics-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.ethics-icon {
+    font-size: 14px;
+}
+
+/* -------------------------------------------------------------
+ * 4. Running Bottom Marquee (Ticker)
+ * ----------------------------------------------------------- */
+.pids-footer {
+    display: flex;
+    height: 44px;
+    background: #002244;
+    border: 2px solid #004488;
+    border-radius: 8px;
+    overflow: hidden;
+    align-items: center;
+}
+
+.pids-alert-tag {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: #e60026;
+    color: #ffffff;
+    font-family: 'Chivo', sans-serif;
+    font-size: 14px;
+    font-weight: 900;
+    letter-spacing: 1px;
+    padding: 0 18px;
+    height: 100%;
+    white-space: nowrap;
+}
+
+.pulse-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #ffffff;
+    box-shadow: 0 0 8px #ffffff;
+    animation: blink 1s infinite alternate;
+}
+
+@keyframes blink {
+    from { opacity: 0.3; }
+    to { opacity: 1; }
+}
+
+.pids-ticker-window {
+    flex: 1;
+    overflow: hidden;
+    position: relative;
+    height: 100%;
+    display: flex;
+    align-items: center;
+}
+
+.pids-ticker-track {
+    white-space: nowrap;
+    display: inline-block;
+    padding-left: 100%;
+    animation: kioskMarquee 26s linear infinite;
+    font-family: 'Outfit', sans-serif;
+    font-size: 17px;
+    font-weight: 700;
+    color: #ffffff;
+    letter-spacing: 0.5px;
+}
+
+@keyframes kioskMarquee {
+    0%   { transform: translateX(0); }
+    100% { transform: translateX(-100%); }
+}
+
+/* -------------------------------------------------------------
+ * Responsive Adjustments for Mobile Aspect Ratio (Dumb Phone Display)
+ * ----------------------------------------------------------- */
+@media (max-height: 500px) {
+    .kiosk-container {
+        padding: 8px 12px;
+        gap: 6px;
+    }
+    .pids-header {
+        padding: 6px 14px;
+    }
+    .location-name {
+        font-size: 20px;
+    }
+    .pids-time {
+        font-size: 20px;
+    }
+    .status-main {
+        font-size: 28px;
+    }
+    .metric-value-huge {
+        font-size: 28px;
+    }
+    .flow-val {
+        font-size: 22px;
+    }
+    .metric-card {
+        padding: 10px 12px;
+    }
+    .pids-footer {
+        height: 36px;
+    }
+    .pids-ethics-strip {
+        display: none; /* Hide in ultra-compact screens */
+    }
+}

@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CivicGuard Citizen Portal - Live Crowd Status & Visitor Guide</title>
+    <!-- Google Fonts for crisp, modern editorial look -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/public.css">
+</head>
+<body class="public-portal-body">
+    <!-- Navbar -->
+    <header class="public-navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <span class="brand-icon">🏛️</span>
+                <div>
+                    <div class="brand-name">CivicGuard Citizen Portal</div>
+                    <div class="brand-sub">Smart City & Tourism Crowd Advisory</div>
+                </div>
+            </div>
+
+            <div class="nav-right">
+                <div class="privacy-badge-pill">
+                    <span class="shield-icon">🛡️</span>
+                    <span>100% Privacy Preserved • Anonymous Sensing</span>
+                </div>
+                <div class="live-indicator">
+                    <span class="live-dot"></span>
+                    <span>LIVE STATUS</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Container -->
+    <main class="portal-main">
+        
+        <!-- Hero Section: Current Venue Status -->
+        <section class="hero-status-card" id="heroCard">
+            <div class="hero-header">
+                <div>
+                    <span class="venue-tag">POPULAR TOURIST CHECKPOINT</span>
+                    <h1 class="venue-title">Mall Road & Central Plaza</h1>
+                    <p class="venue-subtitle">Live occupancy and safe travel forecast for visitors and tourists</p>
+                </div>
+                <div class="hero-timestamp">
+                    <span class="clock-label">LAST UPDATED</span>
+                    <span class="clock-val" id="portalClock">--:--:--</span>
+                </div>
+            </div>
+
+            <!-- Big Status Banner -->
+            <div class="status-summary-box">
+                <div class="status-icon-bubble" id="statusBubble">🟢</div>
+                <div class="status-details">
+                    <div class="status-badge" id="statusBadge">NORMAL CAPACITY</div>
+                    <h2 class="status-headline" id="statusHeadline">Great time to visit! Minimal waiting lines.</h2>
+                    <p class="status-desc" id="statusDesc">Current footfall is within comfortable limits. Walking corridors and viewpoint areas are open with smooth pedestrian flow.</p>
+                </div>
+                <div class="occupancy-circle">
+                    <span class="occ-percent" id="occPercent">45%</span>
+                    <span class="occ-label">OCCUPANCY</span>
+                </div>
+            </div>
+
+            <!-- Live Progress Bar -->
+            <div class="capacity-bar-container">
+                <div class="capacity-track">
+                    <div class="capacity-fill" id="capacityFill" style="width: 45%;"></div>
+                </div>
+                <div class="capacity-legend">
+                    <span>🟢 Safe Flow (0 - 60%)</span>
+                    <span id="currentCapacityRatio">1,679 / 2,000 Visitors</span>
+                    <span>🔴 Overcrowded (85%+)</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Live Ticker & Advisory Bulletin (Updated by Admin) -->
+        <section class="advisory-card">
+            <div class="advisory-tag">
+                <span class="broadcast-icon">📢</span>
+                <span>MUNICIPAL ADVISORY</span>
+            </div>
+            <div class="advisory-content" id="portalAdvisory">
+                Currently Mall Road is under construction (updated by admin panel )
+            </div>
+        </section>
+
+        <!-- Key Insights Grid -->
+        <section class="insights-grid">
+            
+            <!-- Card 1: Best Time to Visit -->
+            <div class="insight-card">
+                <div class="card-icon">⏱️</div>
+                <h3 class="card-title">Peak Hours & Best Time</h3>
+                <div class="insight-highlight" id="peakAlertText">
+                    Crowd rises near 9:30 pm
+                </div>
+                <p class="card-text">
+                    <strong>Recommended Visiting Hours:</strong> 10:00 AM – 4:30 PM for quiet visits, photography, and shopping without congestion.
+                </p>
+                <div class="wait-time-row">
+                    <span>Estimated Entry Wait:</span>
+                    <strong class="text-green" id="waitTimeVal">~2 - 4 Minutes</strong>
+                </div>
+            </div>
+
+            <!-- Card 2: Footfall Telemetry -->
+            <div class="insight-card">
+                <div class="card-icon">👥</div>
+                <h3 class="card-title">Historical Footfall</h3>
+                <div class="metric-row">
+                    <div>
+                        <span class="metric-sublabel">Weekly Average</span>
+                        <div class="metric-big" id="weeklyBaseline">700 - 1200</div>
+                        <span class="metric-footnote">Visitors per day</span>
+                    </div>
+                    <div>
+                        <span class="metric-sublabel">Total Today In</span>
+                        <div class="metric-big text-yellow" id="todayInCount">456</div>
+                        <span class="metric-footnote">Registered entries</span>
+                    </div>
+                </div>
+                <p class="card-text" style="margin-top: 14px;">
+                    Aggregated anonymous counts verified via edge AI vision sensing on Raspberry Pi 4.
+                </p>
+            </div>
+
+            <!-- Card 3: Privacy & Ethics Charter -->
+            <div class="insight-card highlight-ethics">
+                <div class="card-icon">🔒</div>
+                <h3 class="card-title">Privacy Ethics Charter</h3>
+                <p class="card-text">
+                    In compliance with ethical public surveillance guidelines and data privacy standards:
+                </p>
+                <ul class="ethics-list">
+                    <li>✓ <strong>Zero Video Streaming:</strong> No video of individuals is shown on this public portal.</li>
+                    <li>✓ <strong>Anonymous Counting:</strong> AI counts aggregate heads only; no face identification.</li>
+                    <li>✓ <strong>On-Device Edge Inference:</strong> Camera processing runs strictly on local Raspberry Pi hardware without cloud recording.</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- 36-Hour Crowd Trend Timeline -->
+        <section class="trend-section">
+            <div class="trend-header">
+                <div>
+                    <h3 class="trend-title">📊 36-Hour Crowd Density Forecast</h3>
+                    <p class="trend-sub">Based on historical ground truth data and real-time AI footfall counts</p>
+                </div>
+                <span class="trend-pill">36-HOUR ROLLING WINDOW</span>
+            </div>
+
+            <div class="timeline-bars">
+                <div class="timeline-col">
+                    <div class="t-bar" style="height: 25%;"></div>
+                    <span class="t-label">06:00</span>
+                    <span class="t-sub">Quiet</span>
+                </div>
+                <div class="timeline-col">
+                    <div class="t-bar" style="height: 40%;"></div>
+                    <span class="t-label">09:00</span>
+                    <span class="t-sub">Normal</span>
+                </div>
+                <div class="timeline-col">
+                    <div class="t-bar" style="height: 55%;"></div>
+                    <span class="t-label">12:00</span>
+                    <span class="t-sub">Moderate</span>
+                </div>
+                <div class="timeline-col">
+                    <div class="t-bar" style="height: 65%;"></div>
+                    <span class="t-label">15:00</span>
+                    <span class="t-sub">Busy</span>
+                </div>
+                <div class="timeline-col">
+                    <div class="t-bar" style="height: 85%;"></div>
+                    <span class="t-label">18:00</span>
+                    <span class="t-sub">Peak</span>
+                </div>
+                <div class="timeline-col active-hour">
+                    <div class="t-bar high" style="height: 90%;"></div>
+                    <span class="t-label">21:30</span>
+                    <span class="t-sub">Surge</span>
+                </div>
+                <div class="timeline-col">
+                    <div class="t-bar" style="height: 35%;"></div>
+                    <span class="t-label">23:00</span>
+                    <span class="t-sub">Low</span>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="public-footer">
+        <div class="footer-container">
+            <p>© 2026 CivicGuard Municipal Smart City Platform • AI Tourist Crowd Monitor</p>
+            <p class="footer-links">
+                <a href="/kiosk">External Display (Railway PIDS)</a> • 
+                <a href="/">Municipal CCTV View</a> • 
+                <a href="/admin">Admin Access</a>
+            </p>
+        </div>
+    </footer>
+
+    <script src="/static/js/public.js"></script>
+</body>
+</html>

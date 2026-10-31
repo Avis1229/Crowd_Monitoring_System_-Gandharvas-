@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CivicGuard CCTV - Smart City Crowd Surveillance</title>
+    <!-- Google Fonts with offline non-blocking fallback -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Chivo:wght@400;700;900&family=JetBrains+Mono:wght@500;700;800&family=Outfit:wght@400;600;700;800;900&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chivo:wght@400;700;900&family=JetBrains+Mono:wght@500;700;800&family=Outfit:wght@400;600;700;800;900&display=swap"></noscript>
+    <link rel="stylesheet" href="/static/css/dashboard.css">
+</head>
+<body class="cctv-body">
+    <div class="surveillance-container" id="surveillanceContainer">
+        
+        <!-- Top Left Brand & Admin Drawer Trigger -->
+        <div class="cctv-header-left" id="cctvHeaderLeft">
+            <div class="cctv-cam-id">
+                <span class="rec-dot"></span> CAM-04 [CENTRAL PLAZA GATE 2]
+                <span class="cam-headcount-tag">● LIVE IN-FRAME: <strong id="statLiveHeadcount">0</strong></span>
+            </div>
+            <button class="admin-toggle-btn" id="btnToggleAdmin" onclick="toggleAdminDrawer()" title="Open Security Admin Console (Shortcut: Press 'A')">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <circle cx="12" cy="12" r="3"></circle>
+                    <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+                </svg>
+                <span>Admin Controls</span>
+            </button>
+        </div>
+
+        <!-- Video Stream Frame (Real Camera / Raspberry Pi Cam) -->
+        <div class="video-viewport">
+            <img id="videoFeed" src="/video_feed" alt="Live CCTV Feed" onerror="handleStreamError(this)">
+            
+            <!-- Fallback Overlay if camera drops -->
+            <div id="streamFallback" class="stream-fallback" style="display: none;">
+                <div class="fallback-card">
+                    <span class="warning-icon">📹</span>
+                    <h3>Connecting Live Camera Feed...</h3>
+                    <p>Detecting camera on /dev/video0 or Raspberry Pi CSI...</p>
+                    <button class="btn-reconnect" onclick="retryStream()">Retry Live Camera</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Exact Top-Right Yellow Municipal Telemetry HUD (Matching Reference Image) -->
+        <div class="yellow-telemetry-hud" id="telemetryHud">
+            <div class="hud-grid">
+                <!-- Row 1, Col 1: Current Entries -->
+                <div class="hud-cell cell-entries">
+                    <div class="cell-label">Current Entries</div>
+                    <div class="cell-number" id="statEntries">456</div>
+                </div>
+
+                <!-- Row 1, Col 2: No. of Exits -->
+                <div class="hud-cell cell-exits">
+                    <div class="cell-label">No. of Exits</div>
+                    <div class="cell-number" id="statExits">9879</div>
+                </div>
+
+                <!-- Row 1, Col 3: Occupancy Ratio -->
+                <div class="hud-cell cell-occupancy" id="cellOccupancy">
+                    <div class="cell-label" id="occupancyLabel">Live Occupancy</div>
+                    <div class="cell-number occupancy-ratio" id="statOccupancy">0/2000</div>
+                    <div class="occupancy-warning-pill" id="occupancyWarningPill" style="display: none;">⚠️ LIMIT REACHED</div>
+                </div>
+
+                <!-- Row 2, Col 1: Daily Update Box -->
+                <div class="hud-cell cell-daily-update">
+                    <div class="cell-label font-bold">Daily Update</div>
+                    <div class="daily-update-card">
+                        <div class="time-row">
+                            <span class="sub-label">Current Time</span>
+                            <span class="digital-time" id="digitalClock">08:56 pm</span>
+                        </div>
+                        <div class="surge-alert-pill" id="dailyUpdateAlert">
+                            Crowd rises near 9:30 pm
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Row 2, Col 2: Accuracy -->
+                <div class="hud-cell cell-accuracy">
+                    <div class="cell-label font-bold">Accuracy</div>
+                    <div class="cell-number accuracy-percent" id="statAccuracy">87 %</div>
+                </div>
+
+                <!-- Row 2, Col 3: In past Weeks -->
+                <div class="hud-cell cell-weekly">
+                    <div class="cell-label font-bold">In past<br>Weeks</div>
+                    <div class="weekly-text" id="statWeekly">
+                        approx<br>
+                        <span class="weekly-range">700-1200</span><br>
+                        Per day
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bottom Running News / Ticker Banner (Blue Bar + Red LIVE badge) -->
+        <div class="bottom-broadcast-banner">
+            <!-- Left Angled Red Live Badge -->
+            <div class="live-pill">
+                <span class="live-dot"></span>
+                <span class="live-text">LIVE</span>
+            </div>
+
+            <!-- Scrolling Blue Marquee Ticker -->
+            <div class="ticker-scroll-wrapper">
+                <div class="ticker-track" id="tickerTrack">
+                    <span class="ticker-message" id="tickerText">
+                        Currently Mall Road is under construction (updated by admin panel )
+                    </span>
+                    <span class="ticker-separator">• • •</span>
+                    <span class="ticker-message" id="tickerTextDup">
+                        Currently Mall Road is under construction (updated by admin panel )
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Integrated Slide-Over Admin Drawer (Press 'A' to toggle) -->
+        <aside class="admin-drawer" id="adminDrawer">
+            <div class="drawer-header">
+                <div class="drawer-title-group">
+                    <span class="drawer-icon">🛡️</span>
+                    <div>
+                        <h2 class="drawer-title">Admin Command Console</h2>
+                        <span class="drawer-sub">Municipal Surveillance Controller</span>
+                    </div>
+                </div>
+                <button class="drawer-close-btn" onclick="toggleAdminDrawer()" title="Close Drawer (ESC)">✕</button>
+            </div>
+
+            <div class="drawer-body">
+                
+                <!-- Section 0: Counting Mode & Live Demo Controls -->
+                <div class="drawer-section highlight-box" style="border-left: 4px solid #facc15;">
+                    <label class="section-label">🔢 Counting Mode & Live Camera Sync</label>
+                    <p class="section-hint">Choose whether HUD shows pure live camera counts or reference image baseline simulation.</p>
+                    <div class="counter-mode-selector" style="margin-top: 8px; display: flex; flex-direction: column; gap: 8px;">
+                        <label style="display: flex; align-items: flex-start; gap: 8px; cursor: pointer; background: rgba(0,0,0,0.3); padding: 8px 10px; border-radius: 4px; border: 1px solid rgba(255,255,255,0.1);">
+                            <input type="radio" name="counterMode" id="modeLiveRealtime" value="live_realtime" onchange="setCounterMode('live_realtime')" checked style="margin-top: 3px;">
+                            <span>
+                                <strong style="color: #00f076;">● Live Real-Time Edge Mode (Demo Mode)</strong><br>
+                                <small style="color: #94a3b8; font-size: 0.76rem;">Driven 100% by live camera! Entries/Exits start at 0. Occupancy = exact humans currently standing in frame.</small>
+                            </span>
+                        </label>
+                        <label style="display: flex; align-items: flex-start; gap: 8px; cursor: pointer; background: rgba(0,0,0,0.3); padding: 8px 10px; border-radius: 4px; border: 1px solid rgba(255,255,255,0.1);">
+                            <input type="radio" name="counterMode" id="modeShiftBaseline" value="shift_baseline" onchange="setCounterMode('shift_baseline')" style="margin-top: 3px;">
+                            <span>
+                                <strong style="color: #facc15;">● Municipal Shift Mode (Photo Baseline)</strong><br>
+                                <small style="color: #94a3b8; font-size: 0.76rem;">Matches reference photo numbers (456 Entries / 9879 Exits / 1679 Occupancy) and adds live detections on top.</small>
+                            </span>
+                        </label>
+                    </div>
+                    <div style="margin-top: 10px;">
+                        <button type="button" class="btn-drawer-secondary" style="width: 100%; border-color: #ef4444; color: #fca5a5;" onclick="resetLiveCounters()">
+                            🔄 Reset Live Counters (In/Out) to 0
+                        </button>
+                    </div>
+                    <span id="drawerCounterStatus" class="d-status-text"></span>
+                </div>
+                
+                <!-- Section 1: Live Ticker Broadcast -->
+                <div class="drawer-section">
+                    <label class="section-label">📢 Live Ticker Broadcast (Blue Banner)</label>
+                    <p class="section-hint">Updates the running marquee at the bottom of the screen in real-time.</p>
+                    <textarea id="drawerInputTicker" rows="2" class="drawer-textarea">Currently Mall Road is under construction (updated by admin panel )</textarea>
+                    
+                    <div class="drawer-presets">
+                        <button type="button" class="d-preset" onclick="setDrawerTicker('Currently Mall Road is under construction (updated by admin panel )')">Construction</button>
+                        <button type="button" class="d-preset" onclick="setDrawerTicker('⚠️ Heavy footfall at Gate 2. Please divert to North Entrance.')">Crowd Surge</button>
+                        <button type="button" class="d-preset" onclick="setDrawerTicker('🛑 Venue at Maximum Capacity. Entry temporarily paused.')">Capacity Hold</button>
+                    </div>
+
+                    <button class="btn-drawer-primary" onclick="broadcastDrawerTicker()">
+                        🚀 Broadcast to Bottom Ticker
+                    </button>
+                    <span id="drawerTickerStatus" class="d-status-text"></span>
+                </div>
+
+                <!-- Section 2: Daily Update Alert & HUD Settings -->
+                <div class="drawer-section">
+                    <label class="section-label">⏱️ Daily Surge Forecast & Accuracy</label>
+                    <div class="d-form-row">
+                        <div class="d-form-col">
+                            <span class="d-input-label">Red Alert Text:</span>
+                            <input type="text" id="drawerInputAlert" class="drawer-input" value="Crowd rises near 9:30 pm">
+                        </div>
+                        <div class="d-form-col">
+                            <span class="d-input-label">Accuracy (%):</span>
+                            <input type="number" id="drawerInputAccuracy" class="drawer-input" value="87" min="50" max="99">
+                        </div>
+                    </div>
+                    <div class="d-form-row" style="margin-top: 8px;">
+                        <div class="d-form-col">
+                            <span class="d-input-label">Capacity Limit:</span>
+                            <input type="number" id="drawerInputCapacity" class="drawer-input" value="2000" min="50">
+                        </div>
+                        <div class="d-form-col">
+                            <span class="d-input-label">Past Weeks Range:</span>
+                            <input type="text" id="drawerInputWeekly" class="drawer-input" value="700-1200">
+                        </div>
+                    </div>
+                    <div class="d-form-row" style="margin-top: 8px;">
+                        <div class="d-form-col">
+                            <span class="d-input-label">Warning Threshold (Yellow):</span>
+                            <input type="number" id="drawerInputWarning" class="drawer-input" value="30" min="1">
+                        </div>
+                        <div class="d-form-col">
+                            <span class="d-input-label">Critical Threshold (Red):</span>
+                            <input type="number" id="drawerInputCritical" class="drawer-input" value="45" min="2">
+                        </div>
+                    </div>
+                    <button class="btn-drawer-secondary" onclick="updateDrawerHUD()">
+                        💾 Save Yellow HUD Settings
+                    </button>
+                    <span id="drawerHUDStatus" class="d-status-text"></span>
+                </div>
+
+                <!-- Section 3: Camera Input Source -->
+                <div class="drawer-section">
+                    <label class="section-label">📹 Camera Video Source</label>
+                    <select id="drawerSelectSource" class="drawer-select" onchange="changeDrawerSource(this.value)">
+                        <option value="0" selected>Live Camera 0 (/dev/video0) [RPi Cam / Webcam]</option>
+                        <option value="1">Live Camera 1 (/dev/video1)</option>
+                        <option value="sample_crowd.mp4">Test Footage (sample_crowd.mp4)</option>
+                    </select>
+                </div>
+
+                <!-- Section 4: Privacy Ethics Mode -->
+                <div class="drawer-section">
+                    <label class="section-label">🛡️ Privacy Ethics Shield</label>
+                    <select id="drawerSelectPrivacy" class="drawer-select" onchange="changeDrawerPrivacy(this.value)">
+                        <option value="cctv_style" selected>Smart City (Face Blur Active • GDPR Compliant)</option>
+                        <option value="none">Raw Video (Admin Only • No Face Blur)</option>
+                        <option value="anonymize_box">Abstract Centroids (Full Anonymization)</option>
+                    </select>
+                </div>
+
+                <!-- Section 5: Raspberry Pi 4 Hardware Telemetry -->
+                <div class="drawer-section">
+                    <label class="section-label">⚡ Raspberry Pi 4 Hardware Health</label>
+                    <div class="d-telemetry-box">
+                        <div class="d-tel-row">
+                            <span>Processing Node:</span>
+                            <strong id="dTelPlatform">Raspberry Pi 4 Model B</strong>
+                        </div>
+                        <div class="d-tel-row">
+                            <span>Camera Interface:</span>
+                            <strong id="dTelCam">RPi Cam Module (CSI Ribbon)</strong>
+                        </div>
+                        <div class="d-tel-row">
+                            <span>CPU Temperature:</span>
+                            <strong class="text-green" id="dTelTemp">-- °C</strong>
+                        </div>
+                        <div class="d-tel-row">
+                            <span>RAM Usage:</span>
+                            <strong id="dTelRam">-- / --</strong>
+                        </div>
+                        <div class="d-tel-row">
+                            <span>Inference Speed:</span>
+                            <strong class="text-yellow" id="dTelFps">-- FPS</strong>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Section 6: 36-Hour Ground Truth Benchmark Evidence -->
+                <div class="drawer-section">
+                    <label class="section-label">📊 36-Hour Ground Truth Evidence (Round 1)</label>
+                    <p class="section-hint">Export verified error metrics (MAE 1.06, RMSE 1.69) for competition evaluation.</p>
+                    <a href="/api/evidence/download" class="btn-drawer-download">
+                        📥 Download 36-Hour Evidence CSV
+                    </a>
+                </div>
+
+                <!-- Section 7: Dumb Display Screen Lock Mode -->
+                <div class="drawer-section">
+                    <label class="section-label">📱 Street Display / Phone Lock Mode</label>
+                    <p class="section-hint">Hides admin buttons and cursor when running on smartphone dumb display via USB.</p>
+                    <button class="btn-drawer-lock" onclick="toggleDumbDisplayMode()">
+                        🔒 Lock into Street Dumb Display Mode
+                    </button>
+                </div>
+
+                <div class="drawer-actions-bottom">
+                    <button class="btn-drawer-danger" onclick="resetDrawerCounts()">
+                        🔄 Reset In/Out Footfall Counters
+                    </button>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Slide-over Backdrop -->
+        <div class="drawer-backdrop" id="drawerBackdrop" onclick="toggleAdminDrawer()"></div>
+    </div>
+
+    <script src="/static/js/dashboard.js"></script>
+</body>
+</html>
